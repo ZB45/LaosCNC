@@ -3,7 +3,10 @@ include <MCAD/nuts_and_bolts.scad>
 module spindel(l=1600) {
     // stappenmotor.nl: KS1-2x12
     // http://www.stappenmotor.nl/Stappenmotor/kogelomloopspindels/kogelomloopspindels.htm
-    rotate([0,90,0]) cylinder(h=l, r=6); 
+    rotate([0,90,0]) union() {
+        cylinder(h=l, r=6); 
+        translate([0,0,60]) cylinder(h=l-100, r=10);
+    }
 }
 
 module losvastlager() {
@@ -34,27 +37,27 @@ module losvastlager() {
 }
 
 module kogelomloopmoer() {
-    // stappenmotor.nl: KSM1-2x12
+    // stappenmotor.nl: KSM1-5x20
     // http://www.stappenmotor.nl/Stappenmotor/kogelomloopspindels/kogelomloopspindels.htm
     rotate([0,-90,0]) difference() {
         union() {
-            translate([0,0,1]) cylinder(r=12,h=27);
-            cylinder(r=37/2,h=5);
+            translate([0,0,1]) cylinder(r=36/2,h=50); //buitenmantel
+            cylinder(r=58/2,h=10);                  // brede stuk
         }
-        translate([0,0,-1]) cylinder(r=6, h=30);
-        translate([-21,14,-1]) cube([42,12,7]);
-        translate([-21,-26,-1]) cube([42,12,7]);
+        translate([0,0,-1]) cylinder(r=10, h=53);   // binnenmaat
+        translate([-29,22,-1]) cube([58,8,12]);    // afvlak brede stuk
+        translate([-29,-30,-1]) cube([58,8,12]);   // afvlak brede stuk
         for ( x = [ -45 : 45 : 45 ] ) {
             rotate([0, 0, x])
-                translate([14.5, 0, 0])
+                translate([47/2, 0, -1])
                     rotate([0, 0, 90])
-                    cylinder(r=4.5/2, h=7);
+                    cylinder(r=(6.6/2), h=12);
         }
         for ( x = [ 135 : 45 : 225 ] ) {
             rotate([0, 0, x])
-                translate([14.5, 0, 0])
+                translate([47/2, 0, -1])
                     rotate([0, 0, 90])
-                    cylinder(r=4.5/2, h=7);
+                    cylinder(r=(6.6/2), h=12);
         }
     }
 }
@@ -62,21 +65,21 @@ module kogelomloopmoer() {
 module kogelomloopmoerhouder() {
     color([1,0,0])
     difference() {
-        cube([22,32,57]);
+        cube([22,42,58]);
         union() {
-        translate([-1,14,28.5]) rotate([0,90,0]) {
-        cylinder(r=12,h=24);
+        translate([-1,20,28.5]) rotate([0,90,0]) {
+        cylinder(r=18,h=24);
         for ( x = [ -45 : 45 : 45 ] ) {
             rotate([0, 0, x])
-                translate([14.5, 0, 0])
+                translate([47/2, 0, -1])
                     rotate([0, 0, 90])
-                    cylinder(r=4.5/2, h=24);
+                    cylinder(r=6.6/2, h=24);
         }
         for ( x = [ 135 : 45 : 225 ] ) {
             rotate([0, 0, x])
-                translate([14.5, 0, 0])
+                translate([47/2, 0, -1])
                     rotate([0, 0, 90])
-                    cylinder(r=4.5/2, h=24);
+                    cylinder(r=6.6/2, h=24);
         }
         }
         translate([11,-1,5.5]) rotate([-90,0,0]) cylinder(r=2.5, h=34);
@@ -86,11 +89,11 @@ module kogelomloopmoerhouder() {
 }
 
 module aandrijving(o=2,l=1600) {
-    translate([53,0,0]) losvastlager(); 
-    translate([1530,0,0]) losvastlager(); 
+    translate([23,0,0]) losvastlager(); 
+    translate([1500,0,0]) losvastlager(); 
     translate([834+o,25,30]) kogelomloopmoer();
     translate([0,25,30]) spindel(l);
-    translate([807+o,11,30-57/2]) kogelomloopmoerhouder();
+    translate([807+o,5,30-58/2]) kogelomloopmoerhouder(); // y=3???
 }
 
 //aandrijving();

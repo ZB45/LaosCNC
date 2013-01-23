@@ -88,17 +88,17 @@ module xaxis(l) {
     translate([0,37,99.5]) xrails(l);
     translate([l,37,25.5]) rotate([180,0,180]) xrails(l);
 
-    translate([0,16,32]) aandrijving(o=-8, l=l-30);
+    translate([0,16,32]) aandrijving(o=5, l=l-30);
 
     translate([690,40,124]) xgliderblock();
     translate([770,40,124]) xgliderblock();
     translate([750,40,1]) rotate([180,0,180]) xgliderblock();
     translate([830,40,1]) rotate([180,0,180]) xgliderblock();
     translate([676,51,139]) xmontageplaat();
-    translate([1600,0,3]) motorplate();
-    translate([1560,41,62]) motorconnector();
-    translate([1605,41,62]) rotate([0,90,0]) motor(Nema34, NemaMedium, dualAxis=false);
+    //translate([1600,0,3]) motorplate();
+    translate([1520,41,62]) motorconnector();
+    translate([1585,41,62]) rotate([0,90,0]) motor(Nema34, NemaMedium, dualAxis=false);
 }
 
 // l = length of beam
-// xaxis(l=1600);
+//xaxis(l=1600);
