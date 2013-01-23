@@ -100,9 +100,34 @@ module z_montageplaat(zmpt=5, zmph=100, zmpw=100) {
     cube([zmpt ,zmpw, zmph]);
 }
 
+module spacerbus(th=15) {
+    difference() {
+        cylinder(r=5, h=th);
+        translate([0,0,-1]) cylinder(r=2.5, h=th+2);
+    }
+}
+
+module hfmotor() {
+    // http://damencnc.com/en/tools/teknomotor/hf-motor/247
+    // model: C51/60-A-SB-P-ER25-3.3KW-18000RPM
+    union() {
+    difference() {
+        cube([119.5, 102, 220]);
+        translate([-0.1,102/2-36/2,8.5]) rotate([0,90,0]) boltHole(size=8, length=12);
+        translate([-0.1,102/2+36/2,8.5]) rotate([0,90,0]) boltHole(size=8, length=12);
+        translate([-0.1,102/2-36/2,8.5+120]) rotate([0,90,0]) boltHole(size=8, length=12);
+        translate([-0.1,102/2+36/2,8.5+120]) rotate([0,90,0]) boltHole(size=8, length=12);
+    }        
+    translate([119.5,6,100]) cube([30.7,90,80]);
+    translate([119.5/2,51,-9]) cylinder(r=50, h=9);
+    translate([119.5/2,51,-28.5]) cylinder(r=85/2, h=28);
+    translate([119.5/2,51,-56.5]) cylinder(r=15, h=29);
+    }
+}
+
 module z_axis() {
-    h=300; // hoogte van de steun
-    w=50; // afstand van de montageplaat tot de rails
+    h=356; // hoogte van de steun
+    w=10; // afstand van de montageplaat tot de rails
     th=15; // dikte vh aluminium van de steun
     wth=5;  // dikte van de top-plaat
     mbolt=6; // dikte vd bouten in de montageplaat
@@ -118,11 +143,11 @@ module z_axis() {
     r_offset=20; // offset van de rails-gaten
     r_spacing=60; // spacing van de rails-gaten
     spw=72; // spindle width
-    sp_offx=-30; // x spindle offset
-    sp_offz=175; // y spindle offset
+    sp_offx=w-50; // x spindle offset
+    sp_offz=355; // y spindle offset
     cl=75.6; cw=44; ch=25.4; // cart sizes
     coff = 4.6; // cart offset from rails bottom
-    zcoff1 =10; zcoff2=110; // cart offsets
+    zcoff1 =10; zcoff2=zcoff1+120; // cart offsets
     zmph = cl+zcoff2-zcoff1; // heigth of z_montageplaat
     zmpw = mb_h2-mb_h1+cw; //width of z_montageplaat
     zmpt = 5; // dikte van z_montageplaat
@@ -132,15 +157,29 @@ module z_axis() {
     //
     translate([0,mb_h1-th/2,0]) zsteun(h, w, th, mbolt, mbw, mbh, mbc);
     translate([0,mb_h2-th/2,0]) zsteun(h, w, th, mbolt, mbw, mbh, mbc);
-    translate([0,mb_h1-th/2,h]) zsteunconn(h, w, wp, wth, th, rh);    
-    translate([sp_offx,mbh/2-spw/2,sp_offz]) z_spindle();
+    //translate([0,mb_h1-th/2,h]) zsteunconn(h, w, wp, wth, th, rh);    
+    translate([sp_offx,mbh/2-spw/2,sp_offz]) {
+        z_spindle();
+        color([1,0,0]) {
+            translate([8,0,14]) rotate([90,0,0]) spacerbus(th=25);
+            translate([40,0,14]) rotate([90,0,0]) spacerbus(th=25);
+            translate([8,0,46]) rotate([90,0,0]) spacerbus(th=25);
+            translate([40,0,46]) rotate([90,0,0]) spacerbus(th=25);
+            translate([8,72,14]) rotate([-90,0,0]) spacerbus(th=25);
+            translate([40,72,14]) rotate([-90,0,0]) spacerbus(th=25);
+            translate([8,72,46]) rotate([-90,0,0]) spacerbus(th=25);
+            translate([40,72,46]) rotate([-90,0,0]) spacerbus(th=25);
+            // TODO: M5/6 gaten voor bout in steun (4 stuks)
+        }
+    }
     translate([w,mb_h1-rw/2,h]) rotate([0,180,-90]) zrails(h,rh,rw,r_offset,r_spacing);
     translate([w,mb_h2-rw/2,h]) rotate([0,180,-90]) zrails(h,rh,rw,r_offset,r_spacing);
     translate([w+coff,mb_h1-cw/2,zcoff1]) rotate([90,0,90]) zcart(cl,cw,ch);
     translate([w+coff,mb_h2-cw/2,zcoff1]) rotate([90,0,90]) zcart(cl,cw,ch);
     translate([w+coff,mb_h1-cw/2,zcoff2]) rotate([90,0,90]) zcart(cl,cw,ch);
     translate([w+coff,mb_h2-cw/2,zcoff2]) rotate([90,0,90]) zcart(cl,cw,ch);
-    translate([w+coff+ch,mb_h1-cw/2,10]) z_montageplaat(zmpt, zmph, zmpw);
+    translate([w+coff+ch,mb_h1-cw/2,zcoff1]) z_montageplaat(zmpt, zmph, zmpw);
+    translate([w+coff+ch+zmpt,mbh/2-102/2,zcoff1+56.5]) hfmotor();
 }
     
 z_axis();
