@@ -35,35 +35,32 @@ module zsteunconn(h=300, w=40, wp=90, wth=5, th=15, rh=17.5) {
     }
 }
 
-module zrailsholes(l=300, offset=20, spacing=60) {
+module zrailsholes(h=300, r_offset=20, r_spacing=60, rh=17.5) {
     // gaatjes in de beam
-    for ( x = [ offset :spacing : l ] ) {
+    for ( x = [ r_offset :r_spacing : h ] ) {
         union() {
-            translate([10,4,x]) rotate([90,0,0]) cylinder(h=10, r=3, center=true);
+            translate([10,rh-5+0.1,x]) rotate([90,0,0]) boltHole(size=6, length=rh);
         }
     }
 
 }
 
-module zrails(l=300) {
-    // type damencnc HGR-20-T
+module zrails(h=300, rh=17.5, rw=20, r_offset=20, r_spacing=60) {
+    // type damencnc HG20R
     difference() {
-        cube([20,17.5,l]);
-        translate([0,16,-0.1]) cylinder(r=3, h=l+0.2);
-        translate([20,16,-0.1]) cylinder(r=3, h=l+0.2);
-        translate([0,8,-0.1]) cylinder(r=3, h=l+0.2);
-        translate([20,8,-0.1]) cylinder(r=3, h=l+0.2);
-        zrailsholes(l=l,offset=20, spacing=60);
+        cube([rw,rh,h]);
+        translate([0,rh-1.5,-0.1]) cylinder(r=3, h=h+0.2);
+        translate([rw,rh-1.5,-0.1]) cylinder(r=3, h=h+0.2);
+        translate([0,rh/2,-0.1]) cylinder(r=3, h=h+0.2);
+        translate([rw,rh/2,-0.1]) cylinder(r=3, h=h+0.2);
+        zrailsholes(h, r_offset, r_spacing);
     }
-    zrailsholes();
 }
 
-module zcart() {
+module zcart(cl=75.6, cw=44, ch=25.4) {
+    // ch = 30-4.6
     // type damencnc HGH-20CA
-    difference() {
-        cube([44,75.6,30-4.6]);
-        translate([44/2-10, 75.9, -4.6]) rotate([90,0,0]) zrails(l=76);
-    }
+    cube([cw,cl,ch]);
 }
 
 module z_spindle() {
@@ -99,9 +96,13 @@ module z_spindle() {
     }
 }
 
+module z_montageplaat(zmpt=5, zmph=100, zmpw=100) {
+    cube([zmpt ,zmpw, zmph]);
+}
+
 module z_axis() {
     h=300; // hoogte van de steun
-    w=40; // afstand van de montageplaat tot de rails
+    w=50; // afstand van de montageplaat tot de rails
     th=15; // dikte vh aluminium van de steun
     wth=5;  // dikte van de top-plaat
     mbolt=6; // dikte vd bouten in de montageplaat
@@ -113,7 +114,18 @@ module z_axis() {
     mb_h2=122; // afstand tot 1e gat in opstaande rand
     wp = mbh-mb_h1-(mbh-mb_h2)+th; // breedte van de top-plaat
     rh=17.5; // hoogte van de rails
-    xspace=40; //oud!
+    rw=20.0; // breedte van de rails
+    r_offset=20; // offset van de rails-gaten
+    r_spacing=60; // spacing van de rails-gaten
+    spw=72; // spindle width
+    sp_offx=-30; // x spindle offset
+    sp_offz=175; // y spindle offset
+    cl=75.6; cw=44; ch=25.4; // cart sizes
+    coff = 4.6; // cart offset from rails bottom
+    zcoff1 =10; zcoff2=110; // cart offsets
+    zmph = cl+zcoff2-zcoff1; // heigth of z_montageplaat
+    zmpw = mb_h2-mb_h1+cw; //width of z_montageplaat
+    zmpt = 5; // dikte van z_montageplaat
 
     // montageplaat alleen tijdens testen aanzetten!
     translate([-mbd+mbc,0,0]) rotate([0,-90,-90]) x_montageplt();
@@ -121,13 +133,14 @@ module z_axis() {
     translate([0,mb_h1-th/2,0]) zsteun(h, w, th, mbolt, mbw, mbh, mbc);
     translate([0,mb_h2-th/2,0]) zsteun(h, w, th, mbolt, mbw, mbh, mbc);
     translate([0,mb_h1-th/2,h]) zsteunconn(h, w, wp, wth, th, rh);    
-    translate([xspace, 41.9, 0]) rotate([0,0,-90]) zrails(h);
-    translate([xspace, 132, 0]) rotate([0,0,-90]) zrails(h);
-    translate([xspace+4.6,10,10]) rotate([90,0,90]) zcart();
-    translate([xspace+4.6,100,10]) rotate([90,0,90]) zcart();
-    translate([xspace+4.6,10,110]) rotate([90,0,90]) zcart();
-    translate([xspace+4.6,100,110]) rotate([90,0,90]) zcart();
-    translate([-38,41.9,175]) z_spindle();
+    translate([sp_offx,mbh/2-spw/2,sp_offz]) z_spindle();
+    translate([w,mb_h1-rw/2,h]) rotate([0,180,-90]) zrails(h,rh,rw,r_offset,r_spacing);
+    translate([w,mb_h2-rw/2,h]) rotate([0,180,-90]) zrails(h,rh,rw,r_offset,r_spacing);
+    translate([w+coff,mb_h1-cw/2,zcoff1]) rotate([90,0,90]) zcart(cl,cw,ch);
+    translate([w+coff,mb_h2-cw/2,zcoff1]) rotate([90,0,90]) zcart(cl,cw,ch);
+    translate([w+coff,mb_h1-cw/2,zcoff2]) rotate([90,0,90]) zcart(cl,cw,ch);
+    translate([w+coff,mb_h2-cw/2,zcoff2]) rotate([90,0,90]) zcart(cl,cw,ch);
+    translate([w+coff+ch,mb_h1-cw/2,10]) z_montageplaat(zmpt, zmph, zmpw);
 }
     
 z_axis();
