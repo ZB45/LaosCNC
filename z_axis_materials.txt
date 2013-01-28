@@ -1,0 +1,46 @@
+materialenlijst Z-as
+====================
+metaalwinkel.nl
+15x40mm staf alu
+    356mm
+    356mm
+    202mm
+    202mm
+15x10mm staf alu
+    154mm
+10mm plaat alu
+    80x154mm
+    194x154mm
+    60x60mm
+    56x56mm (verloop nema23 motor, optioneel)
+4 x lange moer, Mx, 50mm lang
+draadeind Mx, stukjes op maat knippen, of lange bout
+
+damencnc.com
+1 x C41/47-C-SB-P-ER20-2.0KW-18000RPM 
+1 x 220v: VFD022E21A 1x220V->3x220V 2.2KW & Keypad
+2 x HIWIN Profile Rails HG20R, l=356mm
+4 x HGH-20CA HIWIN Carriage HGH "Compact type"
+1 x HUB ShaftCoupler DCNC-D32-L32_B6.35
+1 x SPIDER DCNC-D32-L32 (B-green)
+1 x HUB ShaftCoupler DCNC-D32-L32_B10.00
+
+boutjes etc:
+4 x inbus M6x15 // steunen aan x-as
+6 x inbus M6x20 verzonken// verticale steunen aan elkaar
+4 x inbus M6x25 // top plaat op steunen
+4 x verzonken inbus M8x20 // spindle op top plaat (ondersteboven)
+4 x stukje draadeind M5 // nema 17 connector
+4 x lange moer M5x50 // op draadeind M5
+4 x verzonken M5x25 // in draadeind M5 / nema_gasket
+4 x inbus M5x12 // in NEMA23 motor
+4 x moer M5 // NEMA23 motor
+12 x inbus M6x15 verzonken // in rails 
+16 x inbus M6x15 verzonken // in carts
+2 x inbus M6x20 // in spindleconn
+4 x inbus M6x20 // motor op plaat
+
+missende (nog te bestellen) onderdelen voor z-axis-bouw:
+* verzonken inbus schroeven
+* lange moeren 50mm
+* freesjes voor alu-freeswerk?
