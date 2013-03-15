@@ -4,9 +4,10 @@ polygon([
     ]);
 }
 
-module rack() {
-b=1/3; h=1; th=1/4; l=3000; offs=1/20;
-translate([0,0.5,0]) rotate([90,0,0])
+module rack(l=3000) {
+    l=l/10;
+b=1/3; h=1; th=1/4; offs=1/20;
+scale([10,10,10]) translate([0,0.5,0]) rotate([90,0,0])
 union() {
 square([l*b,h*(1-th)]);
 for(x=[0:l-1]) {
@@ -15,4 +16,4 @@ for(x=[0:l-1]) {
 }
 }
 
-rack();
+// rack();

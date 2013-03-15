@@ -88,7 +88,7 @@ module zsupport_l() {
         difference() {
             union() {
                 cube([sb_b,sb_l,sb_h]);
-                translate([-sb_b,0,xp_l]) cube([sb_b+1,sb_l,sb_h-xp_h]);
+                //translate([-sb_b,0,xp_l]) cube([sb_b+1,sb_l,sb_h-xp_h]);
             }
             // cut-outs to fit around x_axis-plate
             translate([-1,-1,-1]) cube([xp_bb+1, sb_l+2, xp_bh+1]);
@@ -365,19 +365,19 @@ module stopblock() {
 
 module z_axis() {
     // montageplaat alleen tijdens testen aanzetten!
-    // translate([xp_bb-xp_b,0,0]) rotate([0,-90,-90]) x_montageplt();
+    translate([xp_bb-xp_b,0,0]) rotate([0,-90,-90]) x_montageplt();
     //
     translate([0,0,0]) zsupport_l();
     translate([0,xp_h-sb_l,0]) zsupport_r();
-    translate([sb_b,zr_yoffset,10]) zrails();
-    translate([sb_b,xp_l-zr_l-zr_yoffset,10]) zrails();
-    translate([sb_b+zc_offset,zr_l/2-zc_l/2+zr_yoffset,zc_pos1]) zcart(cl,cw,ch);
-    translate([sb_b+zc_offset,zr_l/2-zc_l/2+zr_yoffset,zc_pos2]) zcart(cl,cw,ch);
-    translate([sb_b+zc_offset,xp_l-zc_l+zr_yoffset,zc_pos1]) zcart(cl,cw,ch);
-    translate([sb_b+zc_offset,xp_l-zc_l+zr_yoffset,zc_pos2]) zcart(cl,cw,ch);
+    $translate([sb_b,zr_yoffset,10]) zrails();
+    $translate([sb_b,xp_l-zr_l-zr_yoffset,10]) zrails();
+    $translate([sb_b+zc_offset,zr_l/2-zc_l/2+zr_yoffset,zc_pos1]) zcart(cl,cw,ch);
+    $translate([sb_b+zc_offset,zr_l/2-zc_l/2+zr_yoffset,zc_pos2]) zcart(cl,cw,ch);
+    $translate([sb_b+zc_offset,xp_l-zc_l+zr_yoffset,zc_pos1]) zcart(cl,cw,ch);
+    $translate([sb_b+zc_offset,xp_l-zc_l+zr_yoffset,zc_pos2]) zcart(cl,cw,ch);
     
-    translate([0,0,sb_h]) topplate();    
-    translate([-sp_offx,xp_l/2-sp_l/2,sb_h+tp_h]) {
+    $translate([0,0,sb_h]) topplate();    
+    $translate([-sp_offx,xp_l/2-sp_l/2,sb_h+tp_h]) {
         z_spindle();
         color([1,0,0]) {
             translate([8,0,14]) spacerbus();
@@ -405,21 +405,23 @@ module z_axis() {
                 translate([48,-48,7+48]) rotate([-90,0,0]) flat_nut(M5,12);
             }
     }
-    translate([
+    $translate([
         sb_b+zc_offset+zc_b-sc_b,
         -zc_offset-sc_l/2+(xp_l+2*zc_offset)/2,
         zc_pos2+zc_h-sc_h]) 
             spindleconn();
-    translate([sb_b+zc_offset+zc_b,-zc_offset,zc_pos1]) z_montageplaat();
-    translate([
+    $translate([sb_b+zc_offset+zc_b,-zc_offset,zc_pos1]) z_montageplaat();
+    $translate([
         sb_b+zc_offset+zc_b+tp_h,
         zc_offset+xp_l/2-51,
         zc_pos1-50]) 
         hfmotor();
-    translate([sb_b,0,0])
+    $translate([sb_b,0,0])
         stopblock();
     translate([sb_b+st_b+5,148,sb_h+10]) rotate([0,180,-90]) endstop();
 }
     
 z_axis();
+
 // TODO: boutjes en gaten opnieuw goed zetten
+//zsupport_l();
