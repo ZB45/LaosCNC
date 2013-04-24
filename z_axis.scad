@@ -2,6 +2,9 @@
 // http://reprap.org/wiki/MCAD
 
 fudge=0.1;
+//$fn=100;
+//$fs=100;
+
 include <MCAD/nuts_and_bolts.scad>
 include <MCAD/stepper.scad>
 include <MCAD/metric_fastners.scad>
@@ -9,189 +12,110 @@ include <NEMA17-to-27-adapter.scad>
 include <x_montageplt.scad>
 include <endstop.scad>
 
-// SIZES: all sizes should be defined here
-
-z_slag = 100;    // de maximale beweging van de as
-                // varieer dit om te zien hoe hij beweegt!
-holes = true;    // uncomment this to see all the holes
-bolts = true;    // uncomment this to see all the bolts
-
-// xaxis_plate
-xp_l = 154;     // length of the plate
-xp_b = 25;      // thickness of the plate
-xp_h = 154;     // height of the plate
-xp_bh = 14.85;  // height of the edge of the plate
-xp_bb = 8.5;    // thickness of the edge of the plate
-xp_bbolt = 6;   // size of the bolts in the edge of the plate
-xp_bhl = 32;    // distance from side to hole in the edge of the plate
-
-// support beam
-sb_l = 40;      // width
-sb_b = 15;      // thickness
-sb_h = 356;     // height
-
-// z rails, type: damencnc HGR-20-T
-zr_l = 20;      // width of the rails 
-zr_b = 17.5;    // thickness of the rails
-zr_h = sb_h-10;    // length of the rails (depends on construction)
-zr_offset = 20; // offset of holes in rails from start
-zr_spacing = 60;// spacing of holes in rails
-zr_yoffset = 6;// y offset from edge of support beam
-
-// zcart, type damencnc HGH-20CA
-zc_l = 44;      // width of the cart
-zc_b = 25.4;    // height of the cart
-zc_h = 75.6;    // length of the cart
-zc_offset = 4.6;// cart offset from rails bottom
-zc_pos1 = 10 + z_slag;   // cart positon on rails
-zc_pos2 = zc_pos1 + 120; // 2nd cart position on rails
-
-// spindle
-sp_l=72;        // spindle width
-sp_b=80;        // spindle length
-sp_offx=30;     // spindle placement parameter
-
-// top plate
-tp_l = xp_l;    // width of the plate
-//tp_b = sb_b*2+zr_b;      // length of the plate
-tp_b = sp_b;
-tp_h=10;        // thickness of top plate
-
-// spacerbus length
-spb_l = 50; // spacing tussen stappenmotor en spindle
-
-// spindleconn sizes
-sc_l = 60;
-sc_b = 60;
-sc_h = 10;
-
-// stopblock
-st_l = xp_l;
-st_b = tp_h;
-st_h = tp_h;
-
-module zrailsbolts(h=300, r_offset=40, r_spacing=60, rh=17.5) {
-    // boutjes in gaatjes in de beam
-    color([0,0.9,0.7])
-    for ( x = [ r_offset :r_spacing : h ] ) {
-        union() {
-            translate([10,rh-10+0.1,x]) rotate([90,0,0]) cap_bolt(M6,15);
-        }
-    }
-
-}
-
 module zsupport_l() {
     // this part can be made out of staf aluminium
+    h=356;
     color ([1,0,0]) 
-    union() {
         difference() {
-            union() {
-                cube([sb_b,sb_l,sb_h]);
-                //translate([-sb_b,0,xp_l]) cube([sb_b+1,sb_l,sb_h-xp_h]);
-            }
-            // cut-outs to fit around x_axis-plate
-            translate([-1,-1,-1]) cube([xp_bb+1, sb_l+2, xp_bh+1]);
-            translate([-1,-1,xp_h-xp_bh]) cube([xp_bb+1, sb_l+2, xp_bh+1]);
-            if (holes) {
+            cube([40,15,h]);
                 // holes for connection to x_axis-plate
-                translate([sb_b+2-xp_bbolt,xp_bhl,xp_bh/2]) rotate([0,-90,0]) boltHole(size=xp_bbolt, length=sb_b+2);
-                translate([sb_b+2-xp_bbolt,xp_bhl,xp_h-xp_bh/2])rotate([0,-90,0]) boltHole(size=xp_bbolt, length=sb_b+2);
-            
+                translate([40-(154/2-45.1),0,154/2-70.1]) rotate([-90,0,0]) boltHole(size=6, length=20);
+                translate([40-(154/2-45.1),0,154/2+70.1]) rotate([-90,0,0]) boltHole(size=6, length=20);
+                translate([20,15.1,154/2-23]) rotate([90,0,0]) bolt(M5,35);
+                translate([20,15.1,154/2+23]) rotate([90,0,0]) bolt(M5,35);
+              
                 // holes for rails
-                for ( x = [ zr_offset :zr_spacing : zr_h ] ) {
-                    translate([4,zr_l/2+zr_yoffset,x+10]) rotate([90,0,90]) boltHole(size=6, length=40);
+                for ( x = [ 28 :60 : h ] ) {
+                    translate([22,4.5,x]) rotate([-90,0,0]) boltHole(size=6, length=20);
                 }
                 // holes to connect the two beams together
-                translate([-1-sb_b,sb_l/2,sb_h-15]) rotate([0,90,0]) boltHole(size=4, length=26);
-                translate([-1-sb_b,sb_l/2,sb_h-100]) rotate([0,90,0]) boltHole(size=4, length=26);
-                translate([-1-sb_b,sb_l/2,sb_h-180]) rotate([0,90,0]) boltHole(size=4, length=26);
+                translate([7.5,11,h-15]) rotate([0,90,-90]) boltHole(size=6, length=70);
+                translate([7.5,11,h-100]) rotate([0,90,-90]) boltHole(size=6, length=70);
+                translate([7.5,11,h-180]) rotate([0,90,-90]) boltHole(size=6, length=70);
                 // holes on top to fit topplate
-                translate([sb_b/2,sb_l/2,sb_h+1]) rotate([0,180,0]) boltHole(size=6, length=10);
-                translate([-sb_b/2,sb_l/2,sb_h+1]) rotate([0,180,0]) boltHole(size=6, length=10);
-            }
+                translate([20,7.5,h+1]) rotate([0,180,0]) boltHole(size=6, length=20);
+                // hole for stopblock();
+                translate([30,16,7.5]) rotate([90,0,0]) boltHole(size=4, length=30);
         }
-    }
-    // show bolts in holes to x_axis-plate
-    $if (bolts) color([0,0.9,0.7]) {
-        translate([sb_b+2-xp_bbolt,xp_bhl,xp_bh/2]) rotate([0,-90,0]) cap_bolt(M6,15);
-        translate([sb_b+2-xp_bbolt,xp_bhl,xp_h-xp_bh/2])rotate([0,-90,0]) cap_bolt(M6,15);
-        // show bolts to connect the two beams together
-        color([0,0.9,0.7]) translate([-1-sb_b,sb_l/2,sb_h-15]) rotate([0,90,0]) csk_bolt(M6,20);
-        color([0,0.9,0.7]) translate([-1-sb_b,sb_l/2,sb_h-100]) rotate([0,90,0]) csk_bolt(M6,20);
-        color([0,0.9,0.7]) translate([-1-sb_b,sb_l/2,sb_h-180]) rotate([0,90,0]) csk_bolt(M6,20);
-    }
 }
 
 module zsupport_r() {
     // this part can be made out of staf aluminium
+    h=356;
     color ([1,0,0]) 
-    union() {
         difference() {
-            union() {
-                cube([sb_b,sb_l,sb_h]);
-                translate([-sb_b,0,xp_l]) cube([sb_b+1,sb_l,sb_h-xp_h]);
-            }
-            // cut-outs to fit around x_axis-plate
-            translate([-1,-1,-1]) cube([xp_bb+1, sb_l+2, xp_bh+1]);
-            translate([-1,-1,xp_h-xp_bh]) cube([xp_bb+1, sb_l+2, xp_bh+1]);
-            if (holes) {
-	            // holes for connection to x_axis-plate
-	            translate([sb_b+2-xp_bbolt,sb_l-xp_bhl,xp_bh/2]) rotate([0,-90,0]) boltHole(size=xp_bbolt, length=sb_b+2);
-	            translate([sb_b+2-xp_bbolt,sb_l-xp_bhl,xp_h-xp_bh/2])rotate([0,-90,0]) boltHole(size=xp_bbolt, length=sb_b+2);
-	            // holes for rails
-	            for ( x = [ zr_offset :zr_spacing : zr_h ] ) {
-	                translate([4,sb_l-zr_l/2-zr_yoffset,x+10]) rotate([90,0,90]) boltHole(size=6, length=40);
-	            }
-	            // holes to connect the two beams together
-	            translate([-1-sb_b,sb_l/2,sb_h-15]) rotate([0,90,0]) boltHole(size=4, length=26);
-	            translate([-1-sb_b,sb_l/2,sb_h-100]) rotate([0,90,0]) boltHole(size=4, length=26);
-	            translate([-1-sb_b,sb_l/2,sb_h-180]) rotate([0,90,0]) boltHole(size=4, length=26);
-	            // holes on top to fit topplate
-	            translate([sb_b/2,sb_l/2,sb_h+1]) rotate([0,180,0]) boltHole(size=6, length=10);
-	            translate([-sb_b/2,sb_l/2,sb_h+1]) rotate([0,180,0]) boltHole(size=6, length=10);
-            }
+            cube([40,15,h]);
+                // holes for connection to x_axis-plate
+                translate([(154/2-45.1),0,154/2-70.1]) rotate([-90,0,0]) boltHole(size=6, length=20);
+                translate([(154/2-45.1),0,154/2+70.1]) rotate([-90,0,0]) boltHole(size=6, length=20);
+                translate([20,0,154/2-23]) rotate([-90,0,0]) boltHole(size=5, length=20);
+                translate([20,0,154/2+23]) rotate([-90,0,0]) boltHole(size=5, length=20);
+             
+                // holes for rails
+                for ( x = [ 28 :60 : h ] ) {
+                    translate([18,4.5,x]) rotate([-90,0,0]) boltHole(size=6, length=20);
+                }
+                // holes to connect the two beams together
+                translate([40-7.5,11,h-15]) rotate([0,90,-90]) boltHole(size=6, length=70);
+                translate([40-7.5,11,h-100]) rotate([0,90,-90]) boltHole(size=6, length=70);
+                translate([40-7.5,11,h-180]) rotate([0,90,-90]) boltHole(size=6, length=70);
+                // holes on top to fit topplate
+                translate([20,7.5,h+1]) rotate([0,180,0]) boltHole(size=6, length=20);
+                // hole for stopblock();
+                translate([10,16,7.5]) rotate([90,0,0]) boltHole(size=4, length=30);
         }
-    }
-    $if (bolts) color([0,0.9,0.7]) {
-        // show bolts in holes to x_axis-plate
-        translate([sb_b+2-xp_bbolt,sb_l-xp_bhl,xp_bh/2]) rotate([0,-90,0]) cap_bolt(M6,15);
-        translate([sb_b+2-xp_bbolt,sb_l-xp_bhl,xp_h-xp_bh/2])rotate([0,-90,0]) cap_bolt(M6,15);
-        // show bolts to connect the two beams together
-        translate([-1-sb_b,sb_l/2,sb_h-15]) rotate([0,90,0]) csk_bolt(M6,20);
-        translate([-1-sb_b,sb_l/2,sb_h-100]) rotate([0,90,0]) csk_bolt(M6,20);
-        translate([-1-sb_b,sb_l/2,sb_h-180]) rotate([0,90,0]) csk_bolt(M6,20);
-    }
+}
+
+module zsupport2() {
+    // this part can be made out of staf aluminium
+    h=356-154;
+    color ([1,0,0]) 
+    difference() {
+            cube([15,40,h]);
+            // holes to connect the two beams together
+            translate([7.5,-3,h-15]) rotate([0,90,90]) boltHole(size=6, length=70);
+            translate([7.5,-3,h-100]) rotate([0,90,90]) boltHole(size=6, length=70);
+            translate([7.5,-3,h-180]) rotate([0,90,90]) boltHole(size=6, length=70);
+            translate([7.5,20,h+1]) rotate([0,180,0]) boltHole(size=6, length=11);
+
+    }   
 }
 
 module topplate() {
-    // this part can be made out of 80x105x10mm aluminium 
+    $fn=50;
     color([1,0,0.2])
     difference() {
-        translate([-sp_offx,0,0]) cube([tp_b, tp_l, tp_h]);
-        // holes to fit on top of zsupport
-        translate([sb_b/2,sb_l/2,tp_h+1]) rotate([0,180,0]) boltHole(size=6, length=tp_h+2);
-        translate([-sb_b/2,sb_l/2,tp_h+1]) rotate([0,180,0]) boltHole(size=6, length=tp_h+2);
-        translate([sb_b/2,tp_l-sb_l/2,tp_h+1]) rotate([0,180,0]) boltHole(size=6, length=tp_h+2);
-        translate([-sb_b/2,tp_l-sb_l/2,tp_h+1]) rotate([0,180,0]) boltHole(size=6, length=tp_h+2);
+    rotate([0,0,90]) translate([0,-154/2,0]) 
+    difference() {
+        translate([-30,0,0]) cube([80, 154, 10]);
         // uitsnede voor spindel
-        translate([19,tp_l/2,-1]) cylinder(r=18,h=12);
+        translate([19,154/2,-1]) cylinder(r=18,h=12);
         // holes to connect to spindle
-        translate([10-sp_offx,xp_l/2-sp_l/2+10,-1]) {
-            translate([0,0,0]) boltHole(size=8, length=tp_h+2);
-            translate([60,0,0]) boltHole(size=8, length=tp_h+2);
-            translate([0,52,0]) boltHole(size=8, length=tp_h+2);
-            translate([60,52,0]) boltHole(size=8, length=tp_h+2);
+        translate([10-30,154/2-72/2+10,-1]) {
+            translate([0,0,0]) boltHole(size=8, length=10+2);
+            translate([60,0,0]) boltHole(size=8, length=10+2);
+            translate([0,52,0]) boltHole(size=8, length=10+2);
+            translate([60,52,0]) boltHole(size=8, length=10+2);
         }       
     }
-    $color([0,0.9,0.7]) translate([w/2,th/2,9]) rotate([0,180,0]) cap_bolt(M6,25);
-    $color([0,0.9,0.7]) translate([-w/2,th/2,9]) rotate([0,180,0]) cap_bolt(M6,25);
-    $color([0,0.9,0.7]) translate([w/2,wp-th/2,9]) rotate([0,180,0]) cap_bolt(M6,25);
-    $color([0,0.9,0.7]) translate([-w/2,wp-th/2,9]) rotate([0,180,0]) cap_bolt(M6,25);
+    // holes to fit on top of zsupport
+    translate([154/2-20,16.5+7.5,-1]) cylinder(r=3, h=12);
+    translate([-154/2+20,16.5+7.5,-1]) cylinder(r=3, h=12);
+    translate([154/2-40+7.5,-20+16.5,-1]) cylinder(r=3, h=12);
+    translate([-154/2+25+7.5,20-40+16.5,-1]) cylinder(r=3, h=12);
+    }
 }
 
 module zrails() {
+    // z rails, type: damencnc HGR-20-T
+    zr_l = 20;      // width of the rails 
+    zr_b = 17.5;    // thickness of the rails
+    zr_h = 356;    // length of the rails (depends on construction)
+    zr_offset = 28-15; // offset of holes in rails from start
+    zr_spacing = 60;// spacing of holes in rails
+    zr_yoffset = 6;// y offset from edge of support beam
     // type damencnc HG20R
+    translate([10,0,0]) rotate([0,0,90]) 
     difference() {
         cube([zr_b,zr_l,zr_h]);
         translate([zr_b/2,0,-1]) cylinder(r=3, h=zr_h+2);
@@ -205,22 +129,21 @@ module zrails() {
             }
         }
     }
-    $zrailsbolts();
 }
 
 module zcartholes() {
-    translate([26,6,19.8]) rotate([0,-90,0]) boltHole(size=6, length=12);
-    translate([26,38,19.8]) rotate([0,-90,0]) boltHole(size=6, length=12);
-    translate([26,6,55.8]) rotate([0,-90,0]) boltHole(size=6, length=12);
-    translate([26,38,55.8]) rotate([0,-90,0]) boltHole(size=6, length=12);
+    translate([6,26,19.8]) rotate([90,0,0]) boltHole(size=6, length=12);
+    translate([6,26,55.8]) rotate([90,0,0]) boltHole(size=6, length=12);
+    translate([38,26,19.8]) rotate([90,0,0]) boltHole(size=6, length=12);
+    translate([38,26,55.8]) rotate([90,0,0]) boltHole(size=6, length=12);
 }
 
 module zcartbolts() {
     color([0,0.9,0.7]) {
-        translate([26,6,19.8]) rotate([0,-90,0]) cap_bolt(M6,15);
-        translate([26,38,19.8]) rotate([0,-90,0]) cap_bolt(M6,15);
-        translate([26,6,55.8]) rotate([0,-90,0]) cap_bolt(M6,15);
-        translate([26,38,55.8]) rotate([0,-90,0]) cap_bolt(M6,15);
+        translate([6,26,19.8]) rotate([90,0,0]) csk_bolt(M6,15);
+        translate([6,26,55.8]) rotate([90,0,0]) csk_bolt(M6,15);
+        translate([38,26,19.8]) rotate([90,0,0]) csk_bolt(M6,15);
+        translate([38,26,55.8]) rotate([90,0,0]) csk_bolt(M6,15);
     }
 
 }
@@ -228,12 +151,13 @@ module zcartbolts() {
 module zcart() {
     // type damencnc HGH-20CA
     difference() {
-        cube([zc_b,zc_l,zc_h]);
+        cube([44,25.5,75.5]);
         zcartholes();
     }
 }
 
-module z_spindle(z_slag=0) {
+module z_spindle(z_slag) {
+    translate([36,0,0]) rotate([0,0,90]) {
     color([1,1,0])
     union() {
         difference() {
@@ -268,29 +192,32 @@ module z_spindle(z_slag=0) {
     $color([0,0.9,0.7]) translate([70,10,-10.1]) rotate([0,0,0]) csk_bolt(M8,20);
     $color([0,0.9,0.7]) translate([70,62,-10.1]) rotate([0,0,0]) csk_bolt(M8,20);
     $color([0,0.9,0.7]) translate([10,62,-10.1]) rotate([0,0,0]) csk_bolt(M8,20);
+    }
 }
 
 module spacerbus() {
     rotate([90,0,0])
     difference() {
-        cylinder(r=5, h=spb_l);
-        translate([0,0,-1]) cylinder(r=2.5, h=spb_l+2);
+        cylinder(r=5, h=40);
+        translate([0,0,-1]) cylinder(r=2.5, h=50+2);
     }
 }
 
 module hfmotorholes() {
-    translate([-10.1,102/2-36/2,8.5]) rotate([0,90,0]) boltHole(size=8, length=22);
-    translate([-10.1,102/2+36/2,8.5]) rotate([0,90,0]) boltHole(size=8, length=22);
-    translate([-10.1,102/2-36/2,8.5+120]) rotate([0,90,0]) boltHole(size=8, length=22);
-    translate([-10.1,102/2+36/2,8.5+120]) rotate([0,90,0]) boltHole(size=8, length=22);
+    translate([0,0,14.75]) {
+    translate([-15,0,0]) rotate([-90,0,0]) boltHole(size=6, length=22);
+    translate([15,0,0]) rotate([-90,0,0]) boltHole(size=6, length=22);
+    translate([-15,0,110]) rotate([-90,0,0]) boltHole(size=6, length=22);
+    translate([15,0,110]) rotate([-90,0,0]) boltHole(size=6, length=22);
+    }
 }
 
 module hfmotorbolts() {
-    color([0,0.9,0.7]) {
-    translate([-10.1,102/2-36/2,8.5]) rotate([0,90,0]) cap_bolt(M8,20);
-    translate([-10.1,102/2+36/2,8.5]) rotate([0,90,0]) cap_bolt(M8,20);
-    translate([-10.1,102/2-36/2,8.5+120]) rotate([0,90,0]) cap_bolt(M8,20);
-    translate([-10.1,102/2+36/2,8.5+120]) rotate([0,90,0]) cap_bolt(M8,20);
+    color([0,0.9,0.7]) translate([0,0,14.75]) {
+    translate([-15,0,0]) rotate([-90,0,0]) cap_bolt(M6,20);
+    translate([15,0,0]) rotate([-90,0,0]) cap_bolt(M6,20);
+    translate([-15,0,110.5]) rotate([-90,0,0]) cap_bolt(M6,20);
+    translate([15,0,110.5]) rotate([-90,0,0]) cap_bolt(M6,20);
     }
 }
 
@@ -307,45 +234,71 @@ module spindlebolts(zmph,zmpw) {
 }
 
 module z_montageplaat() {
-    difference() {
-        cube([tp_h ,xp_l+2*zc_offset, zc_pos2+zc_h-zc_pos1]);
-        translate([-19,0,0]) zcartholes();
-        translate([-19,0,zcoff2-zcoff1]) zcartholes();
-        translate([-19,zmpw-cw,0]) zcartholes();
-        translate([-19,zmpw-cw,zcoff2-zcoff1]) zcartholes();
-        translate([0,16,0.5]) hfmotorholes();
-        spindleholes(zmph,zmpw);
+    translate([-154/2,0,0]) difference() {
+        translate([0,0,-85]) cube([154,10,280]);
+        translate([0,-18,0]) zcartholes();
+        translate([0,-18,120]) zcartholes();
+        translate([154-44,-18,0]) zcartholes();
+        translate([154-44,-18,120]) zcartholes();
+        for ( z = [ 0: 25 : 90 ] ) 
+            translate([154/2,-1,-z]) hfmotorholes();
+        // spindle connection holes
+        translate([154/2+15,7,195-23]) rotate([90,0,0]) boltHole(size=5, length=22);
+        translate([154/2-15,7,195-23]) rotate([90,0,0]) boltHole(size=5, length=22);
+        translate([154/2+15,7,195-53]) rotate([90,0,0]) boltHole(size=5, length=22);
+        translate([154/2-15,7,195-53]) rotate([90,0,0]) boltHole(size=5, length=22);
     }
-    $translate([-24,0,0]) zcartbolts();
-    $translate([-24,0,zcoff2-zcoff1]) zcartbolts();
-    $translate([-24,zmpw-cw,0]) zcartbolts();
-    $translate([-24,zmpw-cw,zcoff2-zcoff1]) zcartbolts();
-    $spindlebolts(zmph,zmpw);
+}
+
+module washernut_m5() {
+    $fs=100;
+    $fn=100;
+    rotate([-90,0,0]) {
+        flat_nut(M5);
+        translate([0,0,4.5]) washer(M5);
+    }
 }
 
 module spindleconn() {
+    h=60;
     difference() {
-        cube([sc_b, sc_l, sc_h]);
-        $translate([sch/2+hole_offset,scw/2,-1]) cylinder(r=6,h=sct+2);
-        $translate([40.1,10,5]) rotate([0,-90,0]) boltHole(size=5, length=22);
-        $translate([40.1,30,5]) rotate([0,-90,0]) boltHole(size=5, length=22);
+        union() {
+            translate([-30,0,54]) cube([60,60,6]);
+            translate([-30,54,0]) cube([60,6,60]);
+            translate([-30,0,0]) 
+                polyhedron ( points = [[0, 54, 54], [6, 54, 54], [0, 54, 0], 
+                [6, 54, 0], [0, 0, 54], [6, 0, 54]], 
+                triangles = [[0,1,2], [3,2,1],  [0,5,1], [0,4,5], 
+                [4,5,2], [3,2,5],  [0,2,4], [1,3,5] ]);
+            translate([24,0,0]) 
+                polyhedron ( points = [[0, 54, 54], [6, 54, 54], [0, 54, 0], 
+                [6, 54, 0], [0, 0, 54], [6, 0, 54]], 
+                triangles = [[0,1,2], [3,2,1],  [0,5,1], [0,4,5], 
+                [4,5,2], [3,2,5],  [0,2,4], [1,3,5] ]);
+        }
+        translate([-20,-1,-1]) cube([40,41,h-14]);
+        translate([0,30,-1]) cylinder(r=6,h=h+2);
+        translate([15,53,40]) rotate([-90,0,0]) boltHole(size=5, length=8);
+        translate([-15,53,40]) rotate([-90,0,0]) boltHole(size=5, length=8);
+        translate([15,53,10]) rotate([-90,0,0]) boltHole(size=5, length=8);
+        translate([-15,53,10]) rotate([-90,0,0]) boltHole(size=5, length=8);
     }
 }
 
 module hfmotor() {
     // http://damencnc.com/en/tools/teknomotor/hf-motor/247
     // model: C51/60-A-SB-P-ER25-3.3KW-18000RPM
-    union() {
     difference() {
-        cube([119.5, 102, 220]);
-        hfmotorholes();
-    }        
-    translate([119.5,6,100]) cube([30.7,90,80]);
-    translate([119.5/2,51,-9]) cylinder(r=50, h=9);
-    translate([119.5/2,51,-28.5]) cylinder(r=85/2, h=28);
-    translate([119.5/2,51,-56.5]) cylinder(r=15, h=29);
+    translate([-51,0,0]) union() {
+        cube([102,119.5, 220]);
+        translate([6,119.5,100]) cube([90,30.7,80]);
+        translate([51,119.5/2,-9]) cylinder(r=50, h=9);
+        translate([51,119.5/2,-28.5]) cylinder(r=85/2, h=28);
+        translate([51,119.5/2,-56.5]) cylinder(r=15, h=29);
+        $translate([51,119.5/2,-136.5]) cylinder(r=4, h=80);
     }
-    hfmotorbolts();
+    hfmotorholes();
+    }
 }
 
 module koppeling() {
@@ -360,68 +313,104 @@ module koppeling() {
 }
 
 module stopblock() {
-    cube([st_b,st_l,st_h]);
-}
-
-module z_axis() {
-    // montageplaat alleen tijdens testen aanzetten!
-    translate([xp_bb-xp_b,0,0]) rotate([0,-90,-90]) x_montageplt();
-    //
-    translate([0,0,0]) zsupport_l();
-    translate([0,xp_h-sb_l,0]) zsupport_r();
-    $translate([sb_b,zr_yoffset,10]) zrails();
-    $translate([sb_b,xp_l-zr_l-zr_yoffset,10]) zrails();
-    $translate([sb_b+zc_offset,zr_l/2-zc_l/2+zr_yoffset,zc_pos1]) zcart(cl,cw,ch);
-    $translate([sb_b+zc_offset,zr_l/2-zc_l/2+zr_yoffset,zc_pos2]) zcart(cl,cw,ch);
-    $translate([sb_b+zc_offset,xp_l-zc_l+zr_yoffset,zc_pos1]) zcart(cl,cw,ch);
-    $translate([sb_b+zc_offset,xp_l-zc_l+zr_yoffset,zc_pos2]) zcart(cl,cw,ch);
-    
-    $translate([0,0,sb_h]) topplate();    
-    $translate([-sp_offx,xp_l/2-sp_l/2,sb_h+tp_h]) {
-        z_spindle();
-        color([1,0,0]) {
-            translate([8,0,14]) spacerbus();
-            translate([40,0,14]) spacerbus();
-            translate([8,0,46]) spacerbus();
-            translate([40,0,46]) spacerbus();
-        }
-        color([0,0.9,0.7]) {
-            translate([8,-52.1,14]) rotate([-90,0,0]) csk_bolt(M5,60);
-            translate([40,-52.1,14]) rotate([-90,0,0]) csk_bolt(M5,60);
-            translate([8,-52.1,46]) rotate([-90,0,0]) csk_bolt(M5,60);
-            translate([40,-52.1,46]) rotate([-90,0,0]) csk_bolt(M5,60);
-        }
-        translate([24,-spb_l+36 ,30.5]) rotate([90,0,0]) koppeling();
-        translate([24,-spb_l,30.5]) rotate([90,0,0]) nema_gasket();
-        translate([24,-spb_l-1,30.5]) rotate([90,0,0]) motor(Nema23, NemaMedium, dualAxis=false);
-            color([0,0.9,0.7]) {
-                translate([0,-56.1,7]) rotate([-90,0,0]) cap_bolt(M5,12);
-                translate([48,-56.1,7]) rotate([-90,0,0]) cap_bolt(M5,12);
-                translate([0,-56.1,7+48]) rotate([-90,0,0]) cap_bolt(M5,12);
-                translate([48,-56.1,7+48]) rotate([-90,0,0]) cap_bolt(M5,12);
-                translate([0,-48,7]) rotate([-90,0,0]) flat_nut(M5,12);
-                translate([48,-48,7]) rotate([-90,0,0]) flat_nut(M5,12);
-                translate([0,-48,7+48]) rotate([-90,0,0]) flat_nut(M5,12);
-                translate([48,-48,7+48]) rotate([-90,0,0]) flat_nut(M5,12);
-            }
+    difference() {
+        cube([154,10,15]);
+        translate([10,7.1,7.5]) rotate([90,0,0]) boltHole(size=4, length=20);
+        translate([144,7.1,7.5]) rotate([90,0,0]) boltHole(size=4, length=20);
     }
-    $translate([
-        sb_b+zc_offset+zc_b-sc_b,
-        -zc_offset-sc_l/2+(xp_l+2*zc_offset)/2,
-        zc_pos2+zc_h-sc_h]) 
-            spindleconn();
-    $translate([sb_b+zc_offset+zc_b,-zc_offset,zc_pos1]) z_montageplaat();
-    $translate([
-        sb_b+zc_offset+zc_b+tp_h,
-        zc_offset+xp_l/2-51,
-        zc_pos1-50]) 
-        hfmotor();
-    $translate([sb_b,0,0])
-        stopblock();
-    translate([sb_b+st_b+5,148,sb_h+10]) rotate([0,180,-90]) endstop();
 }
-    
-z_axis();
 
-// TODO: boutjes en gaten opnieuw goed zetten
-//zsupport_l();
+module static() {
+    //x_montageplt();
+    translate([154/2-40,16.5,-154/2]) {
+        zsupport_l();
+        translate([20,7.5,356+12]) rotate([0,180,0]) cap_bolt(M6,30);
+    }
+    translate([-154/2,16.5,-154/2]) {
+        zsupport_r();
+        translate([20,7.5,356+12]) rotate([0,180,0]) cap_bolt(M6,30);
+    }
+    translate([154/2-15,-40+16.5,154/2]) {
+        zsupport2();
+        translate([7.5,20,356-154+12]) rotate([0,180,0]) cap_bolt(M6,30);
+    }
+    translate([-154/2,-40+16.5,154/2]) {
+        zsupport2();
+        translate([7.5,20,356-154+12]) rotate([0,180,0]) cap_bolt(M6,30);
+    }
+    //translate([-154/2,16.5+15,-154/2]) stopblock();
+    translate([154/2-40+22,16.5+15,-154/2]) zrails(); 
+    translate([-154/2+40-22,16.5+15,-154/2]) zrails(); 
+    translate([0,0,356-154/2]) topplate();
+    translate([0,-30,289]) z_spindle(z_slag);
+    rotate([0,0,90]) 
+    translate([-30,-72/2,356-154/2+10]) {
+        color([1,0,0]) {
+            translate([2,-4,14]) spacerbus();
+            translate([46,-4,14]) spacerbus();
+            translate([2,-4,52]) spacerbus();
+            translate([46,-4,52]) spacerbus();
+        }
+        translate([24,-42+36 ,30.5]) rotate([90,0,0]) koppeling();
+        translate([24,-2,30.5]) rotate([90,0,0]) nema_gasket();
+        translate([24,-40-1,30.5]) rotate([90,0,0]) motor(Nema23, NemaLong, dualAxis=false);
+    }
+    translate([-154/2,50,356-154/2+12]) rotate([0,180,-90]) endstop();
+}
+
+module moving() {
+    translate([-154/2,-25.5,0]) zcart();
+    translate([154/2-44,-25.5,0]) zcart();
+    translate([-154/2,-25.5,195-75.5]) zcart();
+    translate([154/2-44,-25.5,195-75.5]) zcart();
+    z_montageplaat();
+    translate([0,0,-75]) {
+        translate([0,10,0]) hfmotor();
+        hfmotorbolts();
+    }
+    translate([0,-60,132]) {
+        spindleconn();
+        translate([-15,49,10]) washernut_m5();
+        translate([15,49,10]) washernut_m5();
+        translate([-15,49,40]) washernut_m5();
+        translate([15,49,40]) washernut_m5();
+    }
+}
+
+module flatprojection() {
+	// flat for lasercutting
+	$fn=20;
+	$fs=20;
+	projection(cut=true) {
+	translate([154/2,154/2,-12]) rotate([90,0,0]) x_montageplt();
+	translate([154/2,354,-5]) rotate([90,0,0]) z_montageplaat();
+	translate([160,0,7.5]) rotate([-90,0,0]) zsupport_l();
+	translate([210,0,7.5]) rotate([-90,0,0]) zsupport_r();
+	translate([160,360,20]) rotate([-90,0,0]) zsupport2();
+	translate([180,360,20]) rotate([-90,0,0]) zsupport2();
+	translate([0,445,5]) rotate([-90,0,0]) stopblock();
+	translate([154/2,495,-5]) topplate();
+	translate([225,390,0]) nema_gasket();
+	translate([225,450,0]) nema_gasket();
+	}
+}
+
+z_slag = 100;    // de maximale beweging van de as
+                // varieer dit om te zien hoe hij beweegt!
+                // 0...146
+static();
+translate([0,60,z_slag-62]) moving();
+
+
+// TODO:
+// * nameten hoe veel de lagers over de rails vallen
+// * nameten/bereken of z-spindle wel in het midden hangt en op de juiste
+//   hoogte is getekend
+// * MAL maken voor topplate();
+// * SPINDLEconn maken
+
+// SVG:
+// topplate
+// z_montageplaat (nieuwe versie)
+
+

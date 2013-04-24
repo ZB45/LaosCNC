@@ -7,3 +7,5 @@ module endstop() {
     color("gray") translate([0,2,10]) rotate([-80,0,0]) cube([4,1,18]);
     color("gray") translate([0,19,14]) rotate([0,90,0]) cylinder(r=2, h=4);
 }
+
+// endstop();

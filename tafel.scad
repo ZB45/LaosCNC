@@ -73,4 +73,4 @@ module tafel(l,b,h,hs,hp) {
     color([0,0,0]) translate([200,100,750]) imperial();
 }
 
-// tafel(l=2900,b=1600,h=700,hs=300,hp=200);
+//tafel(l=2900,b=1600,h=700,hs=300,hp=200);

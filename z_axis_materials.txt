@@ -44,3 +44,66 @@ missende (nog te bestellen) onderdelen voor z-axis-bouw:
 * verzonken inbus schroeven
 * lange moeren 50mm
 * freesjes voor alu-freeswerk?
+
+====================
+Nieuwe onderdelenlijst
+
+x_montageplt    // montageplaat op x-as. Is er. Er zijn sleuven in gefreesd
+                // zodat de zsupport er in valt
+zsupport (2x)   // rechtop staande alu-balkjes van 15x40
+                // links en rechts zijn in spiegelbeeld!
+        * M6 gaten voor de haakse support boren, met verzonken kop aan de voorkant
+        * M6 gaten voor de rails boren, met verzonken op aan de achterkant
+        * GETAPTE M6 gaten voor de bevestiging aan x_montageplaat boren. 
+            Deze moeten boven en onder zitten
+        * M5 gaten boren voor bevestiging aan x_montageplaat, midden (2x)
+            daarna: FREZEN in de vorm van een zeskantkop
+        * GETAPT M4 gat voor stopblock
+        * M6 kopse kant: middenin gat tappen voor topplate, 20 diep
+zsupport2 (2x) 
+        * GETAPTE M6 gaten op 15mm zijde, voor bevestiging aan zsupport 
+        * GETAPT M6 gat kopse kant middenin. 10mm diep?
+stopblock
+        * M4 gaten met verzonken inbus kop (2x)
+zrails
+        * inkorten (beide kanten?) zodat hij past (2x)
+topplate
+        * prototype van hout!
+        * M8 4 gaten boren
+        * M6 4 gaten boren
+        * heel groot gat frezen voor doorsteek
+zcarts // kunnen zo op de rails geschoven worden
+z_montageplaat
+        * veel gaten M6 tbv hfmotor
+        * M6 (16x) met verzonken kop tbv zcarts
+        * M5 (4x) met verzonken kop tbv spindleconn();
+hfmotor     // kant en klare motor
+spindleconn // dit is een ingewikkeld ding. maken uit staal!
+motorkoppeling: past hij bij de motor die ik wil gebruiken?
+verloopje nema17->23: maken of kopen, of heel zware nema17 gebruiken 
+stappenmotor nema17 of nema23
+2 x eindstop
+
+Bouten, moeren, ringen
+----------------------
+8 x M4 inbus (lengte?) tbv. x-carts in x_montageplt
+4 x M6 inbus 20-25mm tbv zsupport in x_montageplt
+4 x M5 zeskantbout van zsupport naar x_montageplt
+4 x M5 moer
+4 x M5 ring
+6 x M6 30mm inbus
+2 x M4x20 inbus
+12 x M6x20-25 inbus
+2 x M6x30 inbus
+2 x M6x20 inbus
+4 x M8x30 inbus??? in de spindle zitten al bouten, maar zijn ze lang genoeg?
+16 x M6x20 inbus
+4 x M6x20 inbus
+4 x M5x25 inbus
+4 x M5 ringetje
+4 x M5 moer
+4 x M5 afstandhouder (50mm)
+4 x M5 draadeind 40mm
+4 x M5x12 inbus
+4 x M5 moer
+4 x M5 ring
